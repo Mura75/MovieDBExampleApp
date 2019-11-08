@@ -1,13 +1,15 @@
-package com.mobile.coroutineapplication
+package com.mobile.coroutineapplication.presentation
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.gson.JsonObject
+import com.mobile.coroutineapplication.data.respository.UserRepositoryImpl
+import com.mobile.coroutineapplication.domain.repository.UserRepository
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class LoginViewModel : ViewModel() {
+
+    val liveData = MutableLiveData<State>()
 
     private val job = SupervisorJob()
 
@@ -15,28 +17,14 @@ class LoginViewModel : ViewModel() {
 
     private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
 
-    val liveData = MutableLiveData<State>()
+    private val userRepository: UserRepository = UserRepositoryImpl()
 
     fun login(username: String, password: String) {
         uiScope.launch {
             liveData.value = State.ShowLoading
             val result = withContext(Dispatchers.IO) {
-                val requestTokenResponse = ApiClient.apiClient.createRequestToken().await()
-                val requestToken = requestTokenResponse
-                    .body()
-                    ?.getAsJsonPrimitive("request_token")
-                    ?.asString
-
-                val body = JsonObject().apply {
-                    addProperty("username", username)
-                    addProperty("password", password)
-                    addProperty("request_token", requestToken)
-                }
-                val loginResponse = ApiClient.apiClient.login(body).await()
-                loginResponse.body()?.toString() ?: "null"
+                userRepository.login(username, password)
             }
-            Log.d("result_data_vm", result)
-
             liveData.value = State.HideLoading
             liveData.postValue(State.ApiResult(result))
         }
@@ -47,11 +35,10 @@ class LoginViewModel : ViewModel() {
         job.cancel()
     }
 
-
     sealed class State() {
         object ShowLoading: State()
         object HideLoading: State()
-        data class ApiResult(val result: String): State()
+        data class ApiResult(val success: Boolean): State()
         data class Error(val error: String): State()
     }
 }

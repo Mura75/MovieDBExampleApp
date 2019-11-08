@@ -1,4 +1,4 @@
-package com.mobile.coroutineapplication
+package com.mobile.coroutineapplication.data
 
 import android.util.Log
 import com.facebook.stetho.okhttp3.StethoInterceptor
@@ -27,7 +27,9 @@ object ApiClient {
             .addInterceptor { chain ->
                 val newUrl = chain.request().url()
                     .newBuilder()
-                    .addQueryParameter("api_key", API_KEY)
+                    .addQueryParameter("api_key",
+                        API_KEY
+                    )
                     .build()
                 val newRequest = chain.request()
                     .newBuilder()

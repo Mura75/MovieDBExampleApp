@@ -1,4 +1,4 @@
-package com.mobile.coroutineapplication
+package com.mobile.coroutineapplication.presentation
 
 import android.app.Application
 import com.facebook.stetho.Stetho

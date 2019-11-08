@@ -1,5 +1,6 @@
-package com.mobile.coroutineapplication
+package com.mobile.coroutineapplication.presentation
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.mobile.coroutineapplication.data.ApiClient
+import com.mobile.coroutineapplication.R
+import com.mobile.coroutineapplication.presentation.movie_list.MovieListActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import retrofit2.await
@@ -50,8 +54,13 @@ class MainActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                 }
                 is LoginViewModel.State.ApiResult -> {
-                    Log.d("activity_result", result.result.toString())
-                    Toast.makeText(this, result.result, Toast.LENGTH_SHORT).show()
+                    Log.d("activity_result", result.success.toString())
+                    if (result.success) {
+                        startActivity(Intent(this, MovieListActivity::class.java))
+                        Toast.makeText(this, "Login is success", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Login is wrong", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 is LoginViewModel.State.Error -> {
 
@@ -63,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     private fun moviesRequest() {
         uiScope.launch {
             val result = ApiClient.apiClient.getPopularMovies(page = 1).await()
-//            val array = result.getAsJsonArray("results")
+//            val array = success.getAsJsonArray("results")
 //            val id = array.get(0).asJsonObject.getAsJsonPrimitive("id").asInt
 //            val movieInfo = ApiClient.apiClient.getMovie(movieId = id).await()
             Log.d("result_data", result.movies.toString())
