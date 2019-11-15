@@ -6,15 +6,15 @@ import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mobile.coroutineapplication.R
+import org.koin.android.ext.android.inject
 
 class MovieListActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MovieListViewModel
+    private val viewModel: MovieListViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie_list)
-        viewModel = ViewModelProviders.of(this).get(MovieListViewModel::class.java)
         setData()
     }
 

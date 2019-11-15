@@ -13,24 +13,17 @@ import com.mobile.coroutineapplication.R
 import com.mobile.coroutineapplication.presentation.movie_list.MovieListActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
+import org.koin.android.ext.android.inject
 import retrofit2.await
 import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
 
-    private val job = SupervisorJob()
-
-    private val coroutineContext: CoroutineContext = Dispatchers.Main + job
-
-    private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
-
-    private lateinit var loginViewModel: LoginViewModel
+    private val loginViewModel: LoginViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
-
         editTextUserName.setText("Mura")
         editTextPassword.setText("L6zwZSPZmB6EfZr")
 
@@ -69,20 +62,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun moviesRequest() {
-        uiScope.launch {
-            val result = ApiClient.apiClient.getPopularMovies(page = 1).await()
-//            val array = success.getAsJsonArray("results")
-//            val id = array.get(0).asJsonObject.getAsJsonPrimitive("id").asInt
-//            val movieInfo = ApiClient.apiClient.getMovie(movieId = id).await()
-            Log.d("result_data", result.movies.toString())
-            val movieInfo = ApiClient.apiClient.getMovie(movieId = result.movies.get(0).id).await()
-            Log.d("result_data_detail", movieInfo.toString())
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        job.cancel()
     }
 }

@@ -8,7 +8,9 @@ import com.mobile.coroutineapplication.domain.repository.MovieRepository
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class MovieListViewModel : ViewModel() {
+class MovieListViewModel(
+    private val movieRepository: MovieRepository
+) : ViewModel() {
 
     val liveData = MutableLiveData<List<Movie>>()
 
@@ -17,8 +19,6 @@ class MovieListViewModel : ViewModel() {
     private val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
-
-    private val movieRepository: MovieRepository= MovieRepositoryImpl()
 
     fun getMovies(page: Int = 1) {
         uiScope.launch {

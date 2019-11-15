@@ -7,7 +7,9 @@ import com.mobile.coroutineapplication.domain.repository.UserRepository
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     val liveData = MutableLiveData<State>()
 
@@ -16,8 +18,6 @@ class LoginViewModel : ViewModel() {
     private val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
-
-    private val userRepository: UserRepository = UserRepositoryImpl()
 
     fun login(username: String, password: String) {
         uiScope.launch {
