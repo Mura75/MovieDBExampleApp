@@ -5,6 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.mobile.coroutineapplication.data.respository.MovieRepositoryImpl
 import com.mobile.coroutineapplication.domain.models.Movie
 import com.mobile.coroutineapplication.domain.repository.MovieRepository
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
@@ -14,18 +18,17 @@ class MovieListViewModel(
 
     val liveData = MutableLiveData<List<Movie>>()
 
-    private val job = SupervisorJob()
-
-    private val coroutineContext: CoroutineContext = Dispatchers.Main + job
-
-    private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
+    private val compositeDisposable = CompositeDisposable()
 
     fun getMovies(page: Int = 1) {
-        uiScope.launch {
-            val list = withContext(coroutineContext) {
-                movieRepository.getAllMovies(page)
-            }
-            liveData.postValue(list)
-        }
+        compositeDisposable.add(
+            movieRepository.getAllMovies(page)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> liveData.postValue(result) },
+                    { error -> }
+                )
+        )
     }
 }

@@ -1,8 +1,9 @@
 package com.mobile.coroutineapplication.domain.repository
 
 import com.mobile.coroutineapplication.domain.models.Movie
+import io.reactivex.Single
 
 interface MovieRepository {
 
-    suspend fun getAllMovies(page: Int): List<Movie>
+    fun getAllMovies(page: Int): Single<List<Movie>>
 }

@@ -1,8 +1,9 @@
 package com.mobile.coroutineapplication.domain.repository
 
+import io.reactivex.Single
 import kotlinx.coroutines.Deferred
 
 interface UserRepository {
 
-    suspend fun login(username: String, password: String): Boolean
+    fun login(username: String, password: String): Single<Boolean>
 }

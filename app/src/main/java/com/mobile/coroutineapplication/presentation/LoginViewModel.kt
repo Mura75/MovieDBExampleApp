@@ -1,9 +1,16 @@
 package com.mobile.coroutineapplication.presentation
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mobile.coroutineapplication.data.respository.UserRepositoryImpl
 import com.mobile.coroutineapplication.domain.repository.UserRepository
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.Disposables
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
@@ -13,26 +20,24 @@ class LoginViewModel(
 
     val liveData = MutableLiveData<State>()
 
-    private val job = SupervisorJob()
-
-    private val coroutineContext: CoroutineContext = Dispatchers.Main + job
-
-    private val uiScope: CoroutineScope = CoroutineScope(coroutineContext)
+    private val compositeDisposable = CompositeDisposable()
 
     fun login(username: String, password: String) {
-        uiScope.launch {
-            liveData.value = State.ShowLoading
-            val result = withContext(Dispatchers.IO) {
-                userRepository.login(username, password)
-            }
-            liveData.value = State.HideLoading
-            liveData.postValue(State.ApiResult(result))
-        }
+        Log.d("user_data", username + " ==== " + password)
+        compositeDisposable.add(
+            userRepository.login(username, password)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> liveData.value = State.ApiResult(result) },
+                    { error -> liveData.value = State.Error(error.toString()) }
+                )
+        )
     }
 
     override fun onCleared() {
         super.onCleared()
-        job.cancel()
+        compositeDisposable.clear()
     }
 
     sealed class State() {

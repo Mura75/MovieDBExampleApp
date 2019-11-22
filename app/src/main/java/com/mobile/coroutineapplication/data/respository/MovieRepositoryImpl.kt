@@ -5,6 +5,7 @@ import com.mobile.coroutineapplication.data.MovieDBApi
 import com.mobile.coroutineapplication.data.MovieMapper
 import com.mobile.coroutineapplication.domain.models.Movie
 import com.mobile.coroutineapplication.domain.repository.MovieRepository
+import io.reactivex.Single
 
 class MovieRepositoryImpl(
     private val movieDBApi: MovieDBApi
@@ -12,12 +13,8 @@ class MovieRepositoryImpl(
 
     private val mapper = MovieMapper()
 
-    override suspend fun getAllMovies(page: Int): List<Movie> {
-        val movieResponse = movieDBApi.getPopularMovies(page = page).await()
-        val result = movieResponse.movies.map { movieData ->
-            val movie = mapper.from(movieData)
-            movie
-        }
-        return result
+    override fun getAllMovies(page: Int): Single<List<Movie>> {
+        return movieDBApi.getPopularMovies(page = page)
+            .map { response -> response.movies.map { mapper.from(it) } }
     }
 }

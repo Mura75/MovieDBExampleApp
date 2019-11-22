@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         editTextPassword.setText("L6zwZSPZmB6EfZr")
 
         buttonLogin.setOnClickListener {
+            Log.d("user_data", editTextUserName.text.toString() + " ==== " + editTextPassword.text.toString())
             loginViewModel.login(
                 username = editTextUserName.text.toString(),
                 password = editTextPassword.text.toString()
