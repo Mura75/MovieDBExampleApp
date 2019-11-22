@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
                 password = editTextPassword.text.toString()
             )
         }
-
         setData()
+        showToast("hello")
     }
 
     private fun setData() {
