@@ -11,6 +11,9 @@ import retrofit2.http.*
 interface MovieDBApi {
 
     @GET("authentication/token/new")
+    fun createRequestTokenCall(): Call<JsonObject>
+
+    @GET("authentication/token/new")
     fun createRequestToken(): Single<Response<JsonObject>>
 
     @POST("authentication/token/validate_with_login")

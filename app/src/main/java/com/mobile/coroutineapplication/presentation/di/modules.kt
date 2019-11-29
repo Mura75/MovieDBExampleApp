@@ -22,6 +22,7 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.Executors
 
 val networkModule = module {
 
@@ -126,6 +127,7 @@ fun provideRetrofit(
         .client(okHttpClient)
         .addConverterFactory(gsonConverterFactory)
         .addCallAdapterFactory(callAdapterFactory)
+        .callbackExecutor(Executors.newSingleThreadExecutor())
         .build()
 }
 

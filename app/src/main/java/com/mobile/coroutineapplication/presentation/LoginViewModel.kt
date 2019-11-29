@@ -26,11 +26,14 @@ class LoginViewModel(
         Log.d("user_data", username + " ==== " + password)
         compositeDisposable.add(
             userRepository.login(username, password)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result -> liveData.value = State.ApiResult(result) },
-                    { error -> liveData.value = State.Error(error.toString()) }
+                    { error ->
+                        error.printStackTrace()
+                        liveData.value = State.Error(error.toString())
+                    }
                 )
         )
     }

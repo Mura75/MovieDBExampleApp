@@ -23,8 +23,8 @@ class MovieListViewModel(
     fun getMovies(page: Int = 1) {
         compositeDisposable.add(
             movieRepository.getAllMovies(page)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result -> liveData.postValue(result) },
                     { error -> }
